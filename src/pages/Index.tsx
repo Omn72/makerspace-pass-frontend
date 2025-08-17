@@ -1,44 +1,22 @@
 import { useState } from "react";
-import { WalletConnection } from "@/components/WalletConnection";
-import { AccessPassCard } from "@/components/AccessPassCard";
-import { CreatePassForm } from "@/components/CreatePassForm";
-import { AddCertificationForm } from "@/components/AddCertificationForm";
-import { Cog, Zap } from "lucide-react";
-
-interface AccessPass {
-  pass_id: number;
-  member_name: string;
-  certifications: string[];
-  safety_training: boolean;
-  creation_timestamp: number;
-}
+import { AptosWalletConnection } from "@/components/AptosWalletConnection";
+import { Web3AccessPassCard } from "@/components/Web3AccessPassCard";
+import { Web3CreatePassForm } from "@/components/Web3CreatePassForm";
+import { Web3AddCertificationForm } from "@/components/Web3AddCertificationForm";
+import { SmartContractInfo } from "@/components/SmartContractInfo";
+import { useWallet } from "@aptos-labs/wallet-adapter-react";
+import { Cog, Zap, Code2 } from "lucide-react";
 
 const Index = () => {
-  const [isWalletConnected, setIsWalletConnected] = useState(false);
-  const [accessPass, setAccessPass] = useState<AccessPass | null>(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const { connected } = useWallet();
 
-  const handleWalletConnect = () => {
-    setIsWalletConnected(true);
+  const handlePassCreated = () => {
+    setRefreshTrigger(prev => prev + 1);
   };
 
-  const handlePassCreated = (pass: AccessPass) => {
-    setAccessPass(pass);
-  };
-
-  const handleCertificationAdded = (certification: string, isSafetyTraining: boolean) => {
-    if (!accessPass) return;
-
-    if (isSafetyTraining) {
-      setAccessPass({
-        ...accessPass,
-        safety_training: true,
-      });
-    } else {
-      setAccessPass({
-        ...accessPass,
-        certifications: [...accessPass.certifications, certification],
-      });
-    }
+  const handleCertificationAdded = () => {
+    setRefreshTrigger(prev => prev + 1);
   };
 
   return (
@@ -51,8 +29,8 @@ const Index = () => {
               <Cog className="w-5 h-5 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-foreground">MakerSpace</h1>
-              <p className="text-sm text-muted-foreground">Access Pass Management</p>
+              <h1 className="text-2xl font-bold text-foreground">MakerSpace Web3</h1>
+              <p className="text-sm text-muted-foreground">Aptos Blockchain Access Pass Management</p>
             </div>
           </div>
         </div>
@@ -60,43 +38,44 @@ const Index = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto space-y-8">
+        <div className="max-w-6xl mx-auto space-y-8">
           {/* Hero Section */}
           <div className="text-center space-y-4">
             <div className="flex items-center justify-center gap-2 mb-4">
               <Zap className="w-8 h-8 text-makerspace-orange" />
               <h2 className="text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                Makerspace Access Portal
+                Blockchain Makerspace
               </h2>
             </div>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Manage your access pass, track certifications, and unlock the power of making with blockchain-verified credentials.
+              Manage your access pass and certifications on the Aptos blockchain with verifiable, decentralized credentials.
             </p>
+            <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+              <Code2 className="w-4 h-4" />
+              <span>Powered by Aptos Move Smart Contracts</span>
+            </div>
           </div>
 
           {/* Wallet Connection */}
-          <WalletConnection 
-            isConnected={isWalletConnected} 
-            onConnect={handleWalletConnect} 
-          />
+          <AptosWalletConnection />
 
-          {isWalletConnected && (
-            <div className="grid gap-6 md:grid-cols-2">
-              {/* Access Pass Display or Creation */}
-              <div className="space-y-6">
-                {accessPass ? (
-                  <AccessPassCard accessPass={accessPass} />
-                ) : (
-                  <CreatePassForm onPassCreated={handlePassCreated} />
-                )}
+          {connected && (
+            <div className="grid gap-6 lg:grid-cols-3">
+              {/* Left Column - Access Pass */}
+              <div className="lg:col-span-2 space-y-6">
+                <div className="grid gap-6 md:grid-cols-2">
+                  <Web3AccessPassCard refreshTrigger={refreshTrigger} />
+                  <Web3CreatePassForm onPassCreated={handlePassCreated} />
+                </div>
+                <Web3AddCertificationForm 
+                  onCertificationAdded={handleCertificationAdded}
+                  hasPass={true} // This will be dynamically determined by the component
+                />
               </div>
 
-              {/* Add Certification */}
+              {/* Right Column - Smart Contract Info */}
               <div className="space-y-6">
-                <AddCertificationForm 
-                  onCertificationAdded={handleCertificationAdded}
-                  hasPass={!!accessPass}
-                />
+                <SmartContractInfo />
               </div>
             </div>
           )}
@@ -104,7 +83,7 @@ const Index = () => {
           {/* Footer */}
           <footer className="text-center pt-8 border-t border-border/50">
             <p className="text-muted-foreground">
-              Powered by Aptos Blockchain • Secure • Decentralized • Verified
+              Powered by Aptos Move • Decentralized • Immutable • Verifiable
             </p>
           </footer>
         </div>

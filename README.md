@@ -1,73 +1,164 @@
-# Welcome to your Lovable project
+# MakerSpace Web3 Access Pass System
 
-## Project info
+A decentralized makerspace membership system built on Aptos blockchain using Move smart contracts.
 
-**URL**: https://lovable.dev/projects/60e250c0-1b01-4123-9972-53a4f277f051
+## 🚀 Features
 
-## How can I edit this code?
+- **Blockchain-based Access Passes**: NFT-style membership passes stored on Aptos
+- **Machine Certifications**: Track equipment training and certifications
+- **Safety Training**: Verifiable safety completion status
+- **Web3 Integration**: Connect with Aptos wallets (Petra, Martian, etc.)
+- **Real-time Updates**: Live blockchain data synchronization
 
-There are several ways of editing your application.
+## 🛠 Tech Stack
 
-**Use Lovable**
+- **Frontend**: React + TypeScript + Tailwind CSS
+- **Blockchain**: Aptos Move Language
+- **Wallet Integration**: Aptos Wallet Adapter
+- **UI Components**: shadcn/ui
+- **Build Tool**: Vite
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/60e250c0-1b01-4123-9972-53a4f277f051) and start prompting.
+## 📋 Smart Contract Functions
 
-Changes made via Lovable will be committed automatically to this repo.
+### Core Functions
+- `initialize_counter(admin: &signer)` - Initialize the pass counter (admin only)
+- `create_access_pass(member: &signer, name: String, timestamp: u64)` - Mint new access pass
+- `add_certification(address: address, cert: String, is_safety: bool)` - Add certifications
 
-**Use your preferred IDE**
+### Data Structure
+```move
+struct AccessPass {
+    pass_id: u64,
+    member_name: String,
+    certifications: vector<String>,
+    safety_training: bool,
+    creation_timestamp: u64,
+}
+```
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 🚀 Getting Started
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Prerequisites
+- Node.js 18+ 
+- Aptos CLI
+- Aptos wallet (Petra recommended)
 
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
+### Installation
+```bash
+# Clone the repository
 git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
 cd <YOUR_PROJECT_NAME>
 
-# Step 3: Install the necessary dependencies.
-npm i
+# Install dependencies
+npm install
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### Smart Contract Deployment
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+1. **Install Aptos CLI**
+   ```bash
+   curl -fsSL "https://aptos.dev/scripts/install_cli.py" | python3
+   ```
 
-**Use GitHub Codespaces**
+2. **Initialize Aptos Account**
+   ```bash
+   aptos init --network testnet
+   ```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+3. **Deploy the Move Module**
+   ```bash
+   aptos move publish --package-dir ./src/move --named-addresses MyModule=<YOUR_ADDRESS>
+   ```
 
-## What technologies are used for this project?
+4. **Update Frontend Configuration**
+   - Edit `src/lib/aptos.ts`
+   - Update `MODULE_ADDRESS` with your deployed contract address
 
-This project is built with:
+### Configuration
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+1. **Update Contract Address**
+   ```typescript
+   // src/lib/aptos.ts
+   export const MODULE_ADDRESS = "0x..."; // Your deployed address
+   ```
 
-## How can I deploy this project?
+2. **Initialize Counter (Admin Only)**
+   - Connect admin wallet
+   - Call `initialize_counter` function once
 
-Simply open [Lovable](https://lovable.dev/projects/60e250c0-1b01-4123-9972-53a4f277f051) and click on Share -> Publish.
+## 🎮 Usage
 
-## Can I connect a custom domain to my Lovable project?
+### For Members
+1. **Connect Wallet** - Use Petra or compatible Aptos wallet
+2. **Create Access Pass** - Mint your membership NFT
+3. **Add Certifications** - Complete machine training
+4. **Safety Training** - Mark safety courses as complete
 
-Yes, you can!
+### For Admins
+1. **Deploy Contract** - Publish Move module to Aptos
+2. **Initialize System** - Run counter initialization
+3. **Manage Certifications** - Add new equipment types
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## 🔧 Development
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+### Project Structure
+```
+src/
+├── components/           # React components
+├── lib/                 # Utilities and Aptos integration
+├── pages/              # Page components
+├── move/               # Move smart contracts
+└── assets/             # Static assets
+```
+
+### Key Components
+- `AptosWalletConnection` - Wallet connectivity
+- `Web3AccessPassCard` - Display pass information
+- `Web3CreatePassForm` - Mint new passes
+- `Web3AddCertificationForm` - Add certifications
+- `SmartContractInfo` - Contract details
+
+## 🌐 Networks
+
+- **Testnet**: For development and testing
+- **Mainnet**: For production deployment
+
+Current configuration uses Aptos Testnet.
+
+## 📚 Documentation
+
+- [Aptos Documentation](https://aptos.dev/)
+- [Move Language Guide](https://move-language.github.io/)
+- [Aptos Wallet Adapter](https://github.com/aptos-labs/aptos-wallet-adapter)
+
+## 🔒 Security
+
+- Smart contracts use Aptos Resource Account pattern
+- RLS (Resource-Level Security) implemented
+- Wallet signature verification required
+- No private key exposure in frontend
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🆘 Support
+
+- GitHub Issues: For bug reports and feature requests
+- Aptos Discord: For blockchain-specific questions
+- Documentation: Check the /docs folder for detailed guides
+
+---
+
+**Ready to revolutionize makerspace management with blockchain technology!** 🛠️⛓️
